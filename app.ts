@@ -28,7 +28,14 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use("/images", express.static(imagePath));
 
+app.get("/healthz", (req, res) => res.send("OK"));
+app.get("/readiness", (req, res) => res.send("OK"));
+
 app.get("/", (req, res) => {
+  if (data.length === 0) {
+    res.send("No data");
+    return;
+  }
   res.render("index", {
     title: "APOD Clone",
     today: data[0],
@@ -53,6 +60,14 @@ app.get("/:date", (req, res) => {
   });
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
+});
+
+process.on("SIGTERM", () => {
+  console.log("SIGTERM signal received: closing HTTP server");
+  server.close(() => {
+    console.log("HTTP server closed");
+    process.exit(0);
+  });
 });

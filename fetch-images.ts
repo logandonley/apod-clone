@@ -1,8 +1,23 @@
 import path from "path";
 import type { APODImage } from "./types";
 
-const apiKey = process.env.NASA_API_KEY || "DEMO_KEY";
-const fetchDays = 10;
+/*
+ * Required field (use DEMO_KEY if you don't want to register one)
+ * Register here: https://api.nasa.gov/#signUp
+ */
+const apiKey = process.env.NASA_API_KEY;
+
+/*
+ * Note that the DEMO_KEY has a pretty tight rate limit of 30 req/hour
+ * and 50 req/day
+ */
+const fetchDays = parseInt(process.env.FETCH_DAYS || "10", 10);
+
+if (!apiKey) {
+  throw new Error(
+    "NASA_API_KEY environment variable is not set. Either set it to DEMO_KEY or register your own at https://api.nasa.gov/#signUp",
+  );
+}
 
 const volumePath = process.env.VOLUME_PATH || "./data";
 const imagePath = path.join(volumePath, "images");
@@ -64,4 +79,17 @@ async function main() {
   console.log(`Successfully saved ${data.length} images to ${imagePath}`);
 }
 
-await main();
+main().catch((err) => {
+  console.error("Error occurred: ", err);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception thrown:", error);
+  process.exit(1);
+});
