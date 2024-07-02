@@ -1,0 +1,75 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>
+    <%= title %>
+  </title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">
+        APOD Clone
+      </h1>
+      <p class="subtitle">
+        Astronomy Picture of the Day from NASA.
+      </p>
+      <% if (message) { %>
+        <article class="message is-dark">
+          <div class="message-header">
+            <p>Loaded from ConfigMap</p>
+          </div>
+          <div class="message-body">
+            <%= message %>
+          </div>
+        </article>
+        <% } %>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="block">
+        <img src="/images/<%= today.date %>.jpg" alt="Image for <%= today.date %>">
+      </div>
+      <div class="block">
+        <h2 class="title is-4">
+          <%= today.title %> &mdash; <%= today.date %>
+        </h2>
+        <p>
+          <%= today.description %>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <% data.forEach((i)=> { %>
+        <p>
+          <a href="/<%= i.date %>">
+            <%= i.date %> &mdash; <%= i.title %>
+          </a>
+        </p>
+
+        <% }) %>
+
+    </div>
+  </section>
+
+  <footer class="footer mt-6">
+    <div class="content has-text-centered">
+      <p>
+        <strong>APOD Clone</strong> loaded from <strong>
+          <%= hostname %>
+        </strong>
+      </p>
+    </div>
+  </footer>
+</body>
+
+</html>
