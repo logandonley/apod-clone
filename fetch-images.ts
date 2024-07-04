@@ -21,6 +21,7 @@ if (!apiKey) {
 
 const volumePath = process.env.VOLUME_PATH || "./data";
 const imagePath = path.join(volumePath, "images");
+const datafilePath = path.join(volumePath, "data.json");
 
 type APODResponse = {
   date: string;
@@ -53,17 +54,32 @@ async function fetchAndSaveImage(image: APODResponse) {
   return filePath;
 }
 
+async function readExistingData(): Promise<APODImage[]> {
+  const file = Bun.file(datafilePath);
+  if (await file.exists()) {
+    return await file.json();
+  }
+  return [];
+}
+
 async function writeDataToJSON(data: APODImage[]) {
-  const filePath = path.join(volumePath, "data.json");
-  await Bun.write(filePath, JSON.stringify(data));
+  await Bun.write(datafilePath, JSON.stringify(data));
 }
 
 async function main() {
-  const data: APODImage[] = [];
+  const data: APODImage[] = await readExistingData();
+  const existingDates = new Set(data.map((i) => i.date));
+
   for (let i = 0; i < fetchDays; i++) {
     const date = new Date();
     date.setDate(date.getDate() - i);
     const dateStr = dateToCorrectFormat(date);
+
+    if (existingDates.has(dateStr)) {
+      console.log(`Already have data for ${dateStr}, skipping.`);
+      continue;
+    }
+
     const resp = await fetchAPOD(dateStr);
     if (resp.media_type !== "image") continue;
     const image = await fetchAndSaveImage(resp);

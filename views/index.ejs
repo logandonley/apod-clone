@@ -31,45 +31,55 @@
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="block">
-        <img src="/images/<%= today.date %>.jpg" alt="Image for <%= today.date %>">
+  <% if (today) { %>
+    <section class="section">
+      <div class="container">
+        <div class="block">
+          <img src="/images/<%= today.date %>.jpg" alt="Image for <%= today.date %>">
+        </div>
+        <div class="block">
+          <h2 class="title is-4">
+            <%= today.title %> &mdash; <%= today.date %>
+          </h2>
+          <p>
+            <%= today.description %>
+          </p>
+        </div>
       </div>
-      <div class="block">
-        <h2 class="title is-4">
-          <%= today.title %> &mdash; <%= today.date %>
-        </h2>
-        <p>
-          <%= today.description %>
-        </p>
-      </div>
-    </div>
-  </section>
+    </section>
+    <% } %>
 
-  <section class="section">
-    <div class="container">
-      <% data.forEach((i)=> { %>
-        <p>
-          <a href="/<%= i.date %>">
-            <%= i.date %> &mdash; <%= i.title %>
-          </a>
-        </p>
+      <section class="section">
+        <div class="container">
+          <% data.forEach((i)=> { %>
+            <p>
+              <a href="/<%= i.date %>">
+                <%= i.date %> &mdash; <%= i.title %>
+              </a>
+            </p>
 
-        <% }) %>
+            <% }) %>
 
-    </div>
-  </section>
+              <% if (data.length===0) { %>
+                <article class="message is-danger">
+                  <div class="message-body">
+                    There is currently no data available. Please run the data fetcher.
+                  </div>
+                </article>
+                <% } %>
 
-  <footer class="footer mt-6">
-    <div class="content has-text-centered">
-      <p>
-        <strong>APOD Clone</strong> loaded from <strong>
-          <%= hostname %>
-        </strong>
-      </p>
-    </div>
-  </footer>
+        </div>
+      </section>
+
+      <footer class="footer mt-6">
+        <div class="content has-text-centered">
+          <p>
+            <strong>APOD Clone</strong> loaded from <strong>
+              <%= hostname %>
+            </strong>
+          </p>
+        </div>
+      </footer>
 </body>
 
 </html>

@@ -5,7 +5,7 @@ import type { APODImage } from "./types";
 
 const app = express();
 const port = process.env.PORT || 3000;
-const message = process.env.CUSTOM_MESSAGE || "Hello from the config map";
+const message = process.env.CUSTOM_MESSAGE || "";
 
 const volumePath = process.env.VOLUME_PATH || "./data";
 const imagePath = path.join(volumePath, "images");
@@ -32,13 +32,9 @@ app.get("/healthz", (req, res) => res.send("OK"));
 app.get("/readiness", (req, res) => res.send("OK"));
 
 app.get("/", (req, res) => {
-  if (data.length === 0) {
-    res.send("No data");
-    return;
-  }
   res.render("index", {
     title: "APOD Clone",
-    today: data[0],
+    today: data[0] || "",
     message,
     data,
     hostname,
