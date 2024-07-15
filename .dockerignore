@@ -177,3 +177,4 @@ dist
 /data
 .direnv/
 .git/
+k8s/

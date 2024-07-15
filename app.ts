@@ -9,7 +9,6 @@ const message = process.env.CUSTOM_MESSAGE || "";
 
 const volumePath = process.env.VOLUME_PATH || "./data";
 const imagePath = path.join(volumePath, "images");
-const data = await loadData();
 const hostname = os.hostname();
 
 async function loadData(): Promise<APODImage[]> {
@@ -28,10 +27,35 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use("/images", express.static(imagePath));
 
-app.get("/healthz", (req, res) => res.send("OK"));
-app.get("/readiness", (req, res) => res.send("OK"));
+const health = {
+  status: 200,
+  message: "OK",
+};
+app.get("/healthz", (req, res) =>
+  res.status(health.status).send(health.message),
+);
 
-app.get("/", (req, res) => {
+app.get("/set-health", (req, res) => {
+  const status = req.query.status as string | undefined;
+  const message = req.query.message as string | undefined;
+
+  if (status) {
+    const statusNum = parseInt(status);
+    health.status = statusNum;
+  }
+
+  if (message) {
+    health.message = message;
+  }
+
+  res.status(200).json({
+    message: "Health state updated",
+    currentState: health,
+  });
+});
+
+app.get("/", async (req, res) => {
+  const data = await loadData();
   res.render("index", {
     title: "APOD Clone",
     today: data[0] || "",
@@ -41,7 +65,8 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/:date", (req, res) => {
+app.get("/:date", async (req, res) => {
+  const data = await loadData();
   const today = data.find((d) => d.date === req.params.date);
   if (!today) {
     res.status(404).send("There is no image for this date.");

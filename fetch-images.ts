@@ -11,7 +11,7 @@ const apiKey = process.env.NASA_API_KEY;
  * Note that the DEMO_KEY has a pretty tight rate limit of 30 req/hour
  * and 50 req/day
  */
-const fetchDays = parseInt(process.env.FETCH_DAYS || "10", 10);
+const fetchDays = parseInt(process.env.FETCH_DAYS || "5", 10);
 
 if (!apiKey) {
   throw new Error(
